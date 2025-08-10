@@ -1,0 +1,5 @@
+{
+  "name": "Hurricane Tracker",
+  "description": "An application to aggregate and display hurricane weather data. Users can select active storms and invests from an interactive map or a dropdown menu to view detailed information and forecasts.",
+  "requestFramePermissions": []
+}
