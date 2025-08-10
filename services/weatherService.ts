@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { WeatherModel } from '../types';
+import { mockWeatherData } from './mockWeatherService';
 
 const schema = {
   type: Type.ARRAY,
@@ -55,11 +56,14 @@ const schema = {
 };
 
 export const getWeatherData = async (): Promise<WeatherModel[]> => {
-  if (!process.env.API_KEY) {
-    throw new Error("API_KEY is not set. Please configure the environment variables.");
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+  if (!apiKey) {
+    console.log("API key not found, returning mock data.");
+    return Promise.resolve(mockWeatherData);
   }
   
-  const ai = new GoogleGenAI({apiKey: process.env.API_KEY});
+  const ai = new GoogleGenAI(apiKey);
 
   const prompt = `
     Generate a realistic, up-to-date list of active hurricanes, tropical storms, and invests in the North Atlantic basin for today.
@@ -80,7 +84,7 @@ export const getWeatherData = async (): Promise<WeatherModel[]> => {
       },
     });
 
-    const jsonText = response.text.trim();
+    const jsonText = await response.text();
     const data = JSON.parse(jsonText);
     
     if (Array.isArray(data)) {
